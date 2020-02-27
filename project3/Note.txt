@@ -1,0 +1,14 @@
+
+
+[Date : 27/02/2020]
+
+-----Update---- 
+
+After reading the project's description, we thougth it would be good to start with Black-Scholes method to calculate delta & gamma and compare it to the method already implemented.
+
+We intend to change greeks calculation using the new method and compare the values.
+Then, we will compare the time taken by the old method and the new one.
+
+---------------
+
+
