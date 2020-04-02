@@ -128,6 +128,31 @@ namespace QuantLib {
         // binomial tree 
         // (see J.C.Hull, "Options, Futures and other derivatives", 6th edition, pp 397/398)
 
+
+///////////////////////////////////////////////////////////////// AFTER ////////////////////////////////////////////////////////////////
+
+        option.rollback(grid[0]);
+        Array va0(option.values());
+        QL_ENSURE(va0.size() == 3, "Expect 3 nodes in grid at t = 0");
+
+        Real p0u = va0[2]; // up
+        Real p0m = va0[1]; // mid
+        Real p0d = va0[0]; // down (low)
+        Real s0u = lattice->underlying(0, 2); // up price
+        Real s0m = lattice->underlying(0, 1); // middle price
+        Real s0d = lattice->underlying(0, 0); // down (low) price
+
+        // calculate gamma by taking the first derivate of the two deltas
+
+	Real delta0u = (p0u - p0m) / (s0u - s0m);
+	Real delta0d = (p0m - p0d) / (s0m - s0d);
+        Real delta =  (delta0u + delta0d)/2;
+        Real gamma = 2*(delta0u - delta0d)/(s0u-s0d);
+
+
+
+///////////////////////////////////////////////////////////////// BEFORE ////////////////////////////////////////////////////////////////
+        /*
         // Rollback to third-last step, and get underlying prices (s2) &
         // option values (p2) at this point
         option.rollback(grid[2]);
@@ -160,9 +185,11 @@ namespace QuantLib {
         // Finally, rollback to t=0
         option.rollback(0.0);
         Real p0 = option.presentValue();
+        */
+
 
         // Store results
-        results_.value = p0;
+        results_.value = p0m;
         results_.delta = delta;
         results_.gamma = gamma;
         results_.theta = blackScholesTheta(process_,
@@ -170,6 +197,7 @@ namespace QuantLib {
                                            results_.delta,
                                            results_.gamma);
     }
+
 
 }
 
