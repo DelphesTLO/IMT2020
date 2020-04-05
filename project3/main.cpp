@@ -12,15 +12,20 @@
 
 #include <ql/quantlib.hpp>
 #include <iostream>
+#include <fstream>
 
 using namespace QuantLib;
 
 int main()
 {
 
+    std::ofstream out("output.txt");
+
+    auto* coutbuf = std::cout.rdbuf();
+    std::cout.rdbuf(out.rdbuf());
+
     // Calendar SETUP
-
-
+    
     Calendar calendar = TARGET();
 
 
@@ -51,8 +56,6 @@ int main()
 
 
     Date maturity(26, February, 2020);
-
-
 
 
     Spread dividendYield = 0.00;
@@ -188,7 +191,7 @@ int main()
 
     std::cout << "## BEFORE ##" << std::endl;
 
-    const clock_t JR_start = clock();
+    clock_t JR_start = clock();
 
 
     europeanOption.setPricingEngine(boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<JarrowRudd>(bsmProcess, timeSteps)));
@@ -223,7 +226,7 @@ int main()
 
     std::cout << "## AFTER ##" << std::endl;
 
-    const clock_t JRA_start = clock();
+    clock_t JRA_start = clock();
 
 
     europeanOption.setPricingEngine(boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine_2<JarrowRudd_2>(bsmProcess, timeSteps)));
@@ -258,6 +261,312 @@ int main()
     std::cout << " " << std::endl << std::endl;
 
 
+    ///////////////////////////////////////////////////////////////// AdditiveEQPBinomialTree Method ////////////////////////////////////////////////////////////////
+
+    std::cout << "--------------AdditiveEQPBinomialTree Method---------------" << std::endl;
+
+    std::cout << "## BEFORE ##" << std::endl;
+
+    JR_start = clock();
+
+
+    europeanOption.setPricingEngine(boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<AdditiveEQPBinomialTree>(bsmProcess, timeSteps)));
+
+
+    deltaM2 = europeanOption.delta();
+
+
+    gammaM2 = europeanOption.gamma();
+
+    priceM2 = europeanOption.NPV();
+
+
+    std::cout << "Computing time :           	  " << float(clock() - JR_start) / CLOCKS_PER_SEC << " sec" << std::endl;
+
+
+    std::cout << "Price :                          " << priceM2 << std::endl;
+
+
+    std::cout << "Delta :                          " << deltaM2 << std::endl;
+
+
+    std::cout << "Gamma :                          " << gammaM2 << std::endl;
+
+
+    std::cout << "Delta diff (ADD-BS) :             " << deltaM2 - deltaM1 << std::endl;
+
+
+    std::cout << "Gamma diff (ADD-BS) :             " << gammaM2 - gammaM1 << std::endl << std::endl;
+
+
+
+    std::cout << "## AFTER ##" << std::endl;
+
+    JRA_start = clock();
+
+
+    europeanOption.setPricingEngine(boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine_2<AdditiveEQPBinomialTree_2>(bsmProcess, timeSteps)));
+
+
+    deltaM2A = europeanOption.delta();
+
+
+    gammaM2A = europeanOption.gamma();
+
+    priceM2A = europeanOption.NPV();
+
+
+    std::cout << "Computing time :           	  " << float(clock() - JRA_start) / CLOCKS_PER_SEC << " sec" << std::endl;
+
+
+    std::cout << "Price :                          " << priceM2A << std::endl;
+
+
+    std::cout << "Delta :                          " << deltaM2A << std::endl;
+
+
+    std::cout << "Gamma :                          " << gammaM2A << std::endl;
+
+
+    std::cout << "Delta diff (ADD-BS) :             " << deltaM2A - deltaM1 << std::endl;
+
+
+    std::cout << "Gamma diff (ADD-BS) :             " << gammaM2A - gammaM1 << std::endl << std::endl;
+
+
+    std::cout << " " << std::endl << std::endl;
+
+
+
+    ///////////////////////////////////////////////////////////////// Cox-Ross-Rubinstein Method ////////////////////////////////////////////////////////////////
+
+    std::cout << "--------------Cox-Ross-Rubinstein Method---------------" << std::endl;
+
+    std::cout << "## BEFORE ##" << std::endl;
+
+    JR_start = clock();
+
+
+    europeanOption.setPricingEngine(boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<CoxRossRubinstein>(bsmProcess, timeSteps)));
+
+
+    deltaM2 = europeanOption.delta();
+
+
+    gammaM2 = europeanOption.gamma();
+
+    priceM2 = europeanOption.NPV();
+
+
+    std::cout << "Computing time :           	  " << float(clock() - JR_start) / CLOCKS_PER_SEC << " sec" << std::endl;
+
+
+    std::cout << "Price :                          " << priceM2 << std::endl;
+
+
+    std::cout << "Delta :                          " << deltaM2 << std::endl;
+
+
+    std::cout << "Gamma :                          " << gammaM2 << std::endl;
+
+
+    std::cout << "Delta diff (CCR-BS) :             " << deltaM2 - deltaM1 << std::endl;
+
+
+    std::cout << "Gamma diff (CCR-BS) :             " << gammaM2 - gammaM1 << std::endl << std::endl;
+
+
+
+    std::cout << "## AFTER ##" << std::endl;
+
+    JRA_start = clock();
+
+
+    europeanOption.setPricingEngine(boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine_2<CoxRossRubinstein_2>(bsmProcess, timeSteps)));
+
+
+    deltaM2A = europeanOption.delta();
+
+
+    gammaM2A = europeanOption.gamma();
+
+    priceM2A = europeanOption.NPV();
+
+
+    std::cout << "Computing time :           	  " << float(clock() - JRA_start) / CLOCKS_PER_SEC << " sec" << std::endl;
+
+
+    std::cout << "Price :                          " << priceM2A << std::endl;
+
+
+    std::cout << "Delta :                          " << deltaM2A << std::endl;
+
+
+    std::cout << "Gamma :                          " << gammaM2A << std::endl;
+
+
+    std::cout << "Delta diff (CCR-BS) :             " << deltaM2A - deltaM1 << std::endl;
+
+
+    std::cout << "Gamma diff (CCR-BS) :             " << gammaM2A - gammaM1 << std::endl << std::endl;
+
+
+    std::cout << " " << std::endl << std::endl;
+
+
+
+    ///////////////////////////////////////////////////////////////// Trigeorgis Method ////////////////////////////////////////////////////////////////
+
+    std::cout << "--------------Trigeorgis Method---------------" << std::endl;
+
+    std::cout << "## BEFORE ##" << std::endl;
+
+    JR_start = clock();
+
+
+    europeanOption.setPricingEngine(boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<Trigeorgis>(bsmProcess, timeSteps)));
+
+
+    deltaM2 = europeanOption.delta();
+
+
+    gammaM2 = europeanOption.gamma();
+
+    priceM2 = europeanOption.NPV();
+
+
+    std::cout << "Computing time :           	  " << float(clock() - JR_start) / CLOCKS_PER_SEC << " sec" << std::endl;
+
+
+    std::cout << "Price :                          " << priceM2 << std::endl;
+
+
+    std::cout << "Delta :                          " << deltaM2 << std::endl;
+
+
+    std::cout << "Gamma :                          " << gammaM2 << std::endl;
+
+
+    std::cout << "Delta diff (TR-BS) :             " << deltaM2 - deltaM1 << std::endl;
+
+
+    std::cout << "Gamma diff (TR-BS) :             " << gammaM2 - gammaM1 << std::endl << std::endl;
+
+
+
+    std::cout << "## AFTER ##" << std::endl;
+
+    JRA_start = clock();
+
+
+    europeanOption.setPricingEngine(boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine_2<Trigeorgis_2>(bsmProcess, timeSteps)));
+
+
+    deltaM2A = europeanOption.delta();
+
+
+    gammaM2A = europeanOption.gamma();
+
+    priceM2A = europeanOption.NPV();
+
+
+    std::cout << "Computing time :           	  " << float(clock() - JRA_start) / CLOCKS_PER_SEC << " sec" << std::endl;
+
+
+    std::cout << "Price :                          " << priceM2A << std::endl;
+
+
+    std::cout << "Delta :                          " << deltaM2A << std::endl;
+
+
+    std::cout << "Gamma :                          " << gammaM2A << std::endl;
+
+
+    std::cout << "Delta diff (TR-BS) :             " << deltaM2A - deltaM1 << std::endl;
+
+
+    std::cout << "Gamma diff (TR-BS) :             " << gammaM2A - gammaM1 << std::endl << std::endl;
+
+
+    std::cout << " " << std::endl << std::endl;
+
+
+
+
+    ///////////////////////////////////////////////////////////////// Joshi4 Method ////////////////////////////////////////////////////////////////
+
+    std::cout << "--------------Joshi4 Method---------------" << std::endl;
+
+    std::cout << "## BEFORE ##" << std::endl;
+
+    JR_start = clock();
+
+
+    europeanOption.setPricingEngine(boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine<Joshi4>(bsmProcess, timeSteps)));
+
+
+    deltaM2 = europeanOption.delta();
+
+
+    gammaM2 = europeanOption.gamma();
+
+    priceM2 = europeanOption.NPV();
+
+
+    std::cout << "Computing time :           	  " << float(clock() - JR_start) / CLOCKS_PER_SEC << " sec" << std::endl;
+
+
+    std::cout << "Price :                          " << priceM2 << std::endl;
+
+
+    std::cout << "Delta :                          " << deltaM2 << std::endl;
+
+
+    std::cout << "Gamma :                          " << gammaM2 << std::endl;
+
+
+    std::cout << "Delta diff (J4-BS) :             " << deltaM2 - deltaM1 << std::endl;
+
+
+    std::cout << "Gamma diff (J4-BS) :             " << gammaM2 - gammaM1 << std::endl << std::endl;
+
+
+
+    std::cout << "## AFTER ##" << std::endl;
+
+    JRA_start = clock();
+
+
+    europeanOption.setPricingEngine(boost::shared_ptr<PricingEngine>(new BinomialVanillaEngine_2<Joshi4_2>(bsmProcess, timeSteps)));
+
+
+    deltaM2A = europeanOption.delta();
+
+
+    gammaM2A = europeanOption.gamma();
+
+    priceM2A = europeanOption.NPV();
+
+
+    std::cout << "Computing time :           	  " << float(clock() - JRA_start) / CLOCKS_PER_SEC << " sec" << std::endl;
+
+
+    std::cout << "Price :                          " << priceM2A << std::endl;
+
+
+    std::cout << "Delta :                          " << deltaM2A << std::endl;
+
+
+    std::cout << "Gamma :                          " << gammaM2A << std::endl;
+
+
+    std::cout << "Delta diff (J4-BS) :             " << deltaM2A - deltaM1 << std::endl;
+
+
+    std::cout << "Gamma diff (J4-BS) :             " << gammaM2A - gammaM1 << std::endl << std::endl;
+
+
+    std::cout << " " << std::endl << std::endl;
 
 
 
